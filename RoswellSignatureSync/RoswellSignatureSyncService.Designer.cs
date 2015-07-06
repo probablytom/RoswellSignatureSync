@@ -1,6 +1,6 @@
 ﻿namespace RoswellSignatureSync
 {
-    partial class Service1
+    partial class RoswellSignatureSyncService
     {
         /// <summary> 
         /// Required designer variable.
@@ -28,10 +28,18 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
-            this.ServiceName = "Service1";
+            this.signatureSyncLog = new System.Diagnostics.EventLog();
+            ((System.ComponentModel.ISupportInitialize)(this.signatureSyncLog)).BeginInit();
+            // 
+            // RoswellSignatureSyncService
+            // 
+            this.ServiceName = "roswellSignatureSyncService";
+            ((System.ComponentModel.ISupportInitialize)(this.signatureSyncLog)).EndInit();
+
         }
 
         #endregion
+
+        private System.Diagnostics.EventLog signatureSyncLog;
     }
 }
