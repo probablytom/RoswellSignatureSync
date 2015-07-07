@@ -33,6 +33,7 @@
             // 
             // RoswellSignatureSyncService
             // 
+            this.AutoLog = false;
             this.ServiceName = "roswellSignatureSyncService";
             ((System.ComponentModel.ISupportInitialize)(this.signatureSyncLog)).EndInit();
 
