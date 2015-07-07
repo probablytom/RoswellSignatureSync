@@ -10,6 +10,7 @@ using System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Exchange.WebServices.Data;
+using System.IO;
 
 namespace RoswellSignatureSync
 {
@@ -71,13 +72,15 @@ namespace RoswellSignatureSync
             setupTimer();
             setupExchangeConnection();
 
+            OnStart();
+
         }
 
 
 
         // Service management functions BEGIN =================================
 
-        protected override void OnStart(string[] args)
+        protected void OnStart()
         {
             // Report signature state
             // Update the service state to Start Pending.
@@ -85,14 +88,19 @@ namespace RoswellSignatureSync
             serviceStatus.dwCurrentState = ServiceState.SERVICE_START_PENDING;
             serviceStatus.dwWaitHint = 100000;
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);
-
+            
             // download a new signature (http://stackoverflow.com/questions/307688/how-to-download-a-file-from-a-url-in-c)
             // update the local signature
             downloadAndReplaceSignature();
-
+            
             // Update the service state to Running.
             serviceStatus.dwCurrentState = ServiceState.SERVICE_RUNNING;
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);
+        
+        }
+        protected override void OnStart(string[] args)
+        {
+            OnStart(); // Default to the above -- we don't need args.
         }
 
 
@@ -127,16 +135,33 @@ namespace RoswellSignatureSync
         // Download the signature from a website, replacing the file at `signatureLocation`. 
         protected void downloadAndReplaceSignature()
         {
+            signatureSyncLog.WriteEntry("Attempting to update signature.");
+
             // download and update local outlook signatures
             using (var client = new WebClient())
             {
-                signatureSyncLog.WriteEntry("Updating signature if an update exists.");
-                client.DownloadFile("http://upkk988694be.probablytom.koding.io/Roswell/sigTestDownload.htm", signatureLocation);
+                try
+                {
+                    signatureSyncLog.WriteEntry("Updating signature if an update exists.");
+                    client.DownloadFile("http://upkk988694be.probablytom.koding.io/Roswell/sigTestDownload.htm", signatureLocation);
+                }
+                catch (Exception ex)
+                {
+                    signatureSyncLog.WriteEntry("Failed to update local signature.\nSystem error reads: " + ex.ToString());
+                }
             }
 
-            // use downlaoded file for OWA signature
-            userConfig.Dictionary.Add("signaturehtml", signatureLocation); // do we use signatureLocation here?
-            userConfig.Update();
+            try
+            {
+                // use downlaoded file for OWA signature
+                userConfig.Dictionary.Remove("signaturehtml");
+                userConfig.Dictionary.Add("signaturehtml", File.ReadAllText(signatureLocation)); // do we use signatureLocation here?
+                userConfig.Update();
+            }
+            catch (Exception ex)
+            {
+                signatureSyncLog.WriteEntry("Failed to update remote signature.\nSystem error reads: " + ex.ToString());
+            }
 
         }
 
