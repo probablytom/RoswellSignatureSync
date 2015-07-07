@@ -54,6 +54,10 @@ namespace RoswellSignatureSync
         UserConfiguration userConfig;
         string username = "roswell@tomwallis.onmicrosoft.com";
         string password = "Passw0rd";
+
+
+        // Password storage variables
+        PasswordVault vault;
         
 
         // Function import for reporting service state
@@ -153,9 +157,9 @@ namespace RoswellSignatureSync
 
             try
             {
-                // use downlaoded file for OWA signature
+                // use downloaded file for OWA signature
                 userConfig.Dictionary.Remove("signaturehtml");
-                userConfig.Dictionary.Add("signaturehtml", File.ReadAllText(signatureLocation)); // do we use signatureLocation here?
+                userConfig.Dictionary.Add("signaturehtml", File.ReadAllText(signatureLocation)); 
                 userConfig.Update();
             }
             catch (Exception ex)
@@ -199,7 +203,7 @@ namespace RoswellSignatureSync
         {
             // Create a timer so we replace the signature every hour
             System.Timers.Timer timer = new System.Timers.Timer();
-            timer.Interval = 36000; // This should be 360000 on production!
+            timer.Interval = 36000; // This should be 3600000 on production!
             timer.Elapsed += new System.Timers.ElapsedEventHandler(this.OnTimer);
             timer.Start();
         }
@@ -207,11 +211,27 @@ namespace RoswellSignatureSync
 
         protected void setupExchangeConnection()
         {
+            try
+            {
+                
+                
             // Connect to office365 Exchange
             exchangeService = new ExchangeService(ExchangeVersion.Exchange2010_SP2); // For office365, this appears to be right -- see working powershell script.
             exchangeService.Credentials = new WebCredentials(username, password);
-            exchangeService.UseDefaultCredentials = false; // CAN WE USE THIS?! UNSAFE WITH OFFICE365?! https://msdn.microsoft.com/en-us/library/office/dn567668.aspx#Create
+            exchangeService.UseDefaultCredentials = false; // this must be false for online exchange/office365.
             exchangeService.AutodiscoverUrl(username, RedirectionUrlValidationCallback);
+            
+signatureSyncLog.WriteEntry("trying to get credentials");
+                // Try to get credentials from Windows storage.
+                NetworkCredential credentials = CredentialCache.DefaultCredentials.GetCredential(exchangeService.Url, "Basic");
+                signatureSyncLog.WriteEntry("maybe got credentials");
+                signatureSyncLog.WriteEntry(credentials.UserName + ", " + credentials.Password);
+
+                if (credentials.UserName == "")
+                {
+                    System.Management.
+                }
+
 
             // Get a user config object
             userConfig = UserConfiguration.Bind(exchangeService,
@@ -220,6 +240,11 @@ namespace RoswellSignatureSync
                                                                   UserConfigurationProperties.All);
 
             // We SHOULD now be set up! In theory.
+            }
+            catch (Exception ex)
+            {
+                signatureSyncLog.WriteEntry("Failed to connect to Exchange at " + exchangeService.Url + ".\nSystem error reads: " + ex.ToString());
+            }
         }
 
 
@@ -236,6 +261,10 @@ namespace RoswellSignatureSync
             
             signatureSyncLog.Source = logSourceName;
             signatureSyncLog.Log = logName;
+        }
+
+        protected void configurePasswordStorage()
+        {
         }
 
         // SETUP FUNCTIONS END ================================================
