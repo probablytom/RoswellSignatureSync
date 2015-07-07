@@ -12,15 +12,8 @@ using System.Threading.Tasks;
 
 namespace RoswellSignatureSync
 {
-    public partial class RoswellSignatureSyncService : ServiceBase
-    {
 
-        // Variables for cleanliness
-        string logSourceName = "RoswellSignatureSync";
-        string logName = "RoswellSignatureSync";
-        string signatureLocation = @"C:\Users\tom.wallis\AppData\Roaming\Microsoft\Signatures\rosNew.htm";
-
-        // Variables for specifying service state
+    // Variables for specifying service state
         public enum ServiceState
         {
             SERVICE_STOPPED = 0x00000001,
@@ -44,6 +37,23 @@ namespace RoswellSignatureSync
             public long dwWaitHint;
         };
 
+
+    public partial class RoswellSignatureSyncService : ServiceBase
+    {
+
+        // Variables for cleanliness
+        string logSourceName = "RoswellSignatureSync";
+        string logName = "RoswellSignatureSync";
+        string signatureLocation = @"C:\Users\tom.wallis\AppData\Roaming\Microsoft\Signatures\rosNew.htm";
+
+        
+
+        // Function import for reporting service state
+        [DllImport("advapi32.dll", SetLastError = true)]
+        private static extern bool SetServiceStatus(IntPtr handle, ref ServiceStatus serviceStatus);
+
+
+        // Constructor
         public RoswellSignatureSyncService()
         {
             this.AutoLog = false;
@@ -67,22 +77,55 @@ namespace RoswellSignatureSync
 
         }
 
+
+
+        // Service management functions BEGIN =================================
+
         protected override void OnStart(string[] args)
         {
+            // Report signature state
+            // Update the service state to Start Pending.
+            ServiceStatus serviceStatus = new ServiceStatus();
+            serviceStatus.dwCurrentState = ServiceState.SERVICE_START_PENDING;
+            serviceStatus.dwWaitHint = 100000;
+            SetServiceStatus(this.ServiceHandle, ref serviceStatus);
+
             // download a new signature (http://stackoverflow.com/questions/307688/how-to-download-a-file-from-a-url-in-c)
             // update the local signature
             downloadAndReplaceSignature();
+
+            // Update the service state to Running.
+            serviceStatus.dwCurrentState = ServiceState.SERVICE_RUNNING;
+            SetServiceStatus(this.ServiceHandle, ref serviceStatus);
         }
+
 
         protected override void OnStop()
         {
+            // Report signature state
+            // Update the service state to Stop Pending.
+            ServiceStatus serviceStatus = new ServiceStatus();
+            serviceStatus.dwCurrentState = ServiceState.SERVICE_STOP_PENDING;
+            serviceStatus.dwWaitHint = 100000;
+            SetServiceStatus(this.ServiceHandle, ref serviceStatus);
+
+            // Update the service state to Stopped.
+            serviceStatus.dwCurrentState = ServiceState.SERVICE_STOPPED;
+            SetServiceStatus(this.ServiceHandle, ref serviceStatus);
         }
+
 
         public void OnTimer(object sender, System.Timers.ElapsedEventArgs args)
         {
             // Download a new signature and replace the existing one
             downloadAndReplaceSignature();
         }
+
+        // Service management functions END ===================================
+
+
+
+        // SYNCING FUNCTIONS BEGIN ============================================
 
         // Download the signature from a website, replacing the file at `signatureLocation`. 
         protected bool downloadAndReplaceSignature()
@@ -94,6 +137,7 @@ namespace RoswellSignatureSync
             }
             return true;
         }
+
         protected bool downloadAndReplaceSignature(string url)
         {
             using (var client = new WebClient())
@@ -103,11 +147,15 @@ namespace RoswellSignatureSync
             return true;
         }
 
-        // returns true if update necessary, false otherwise. 
-        protected bool updateSignautre()
+        
+        // Run the PowerShell script?
+        protected bool update365()
         {
-            // replace local file in the AppData filder for this user with the recently downloaded signature.
             return false;
         }
+
+        // SYNCING FUNCTIONS END ==============================================
+
+
     }
 }
