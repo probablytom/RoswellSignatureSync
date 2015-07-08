@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.Exchange.WebServices.Data;
 using System.IO;
 using System.Security.Cryptography;
+using System.Management.Automation;
 
 namespace RoswellSignatureSync
 {
@@ -56,11 +57,9 @@ namespace RoswellSignatureSync
         string username = "roswell@tomwallis.onmicrosoft.com";
         string password = "Passw0rd";
 
-
-        // Encryption variables
-        static readonly string PasswordHash = ""; // Is this the hashed password, or the plaintext?
-        static readonly string SaltKey = "RoswellSalt";
-        static readonly string VIKey = "123RoswellKey";
+        PSObject psobject;// = new PSObject();
+        PSCredential credential;// = new PSCredential(psobject);
+        
         
 
         // Function import for reporting service state
@@ -73,19 +72,30 @@ namespace RoswellSignatureSync
         {
             this.AutoLog = false;
             InitializeComponent();
+
+            setupErrorLogs();
+            psobject = new PSObject();
+            credential = new PSCredential(psobject);
+            signatureSyncLog.WriteEntry("Getting creds");
+            username = RoswellPasswordPrompt.ShowDialog("text","caption");
+            signatureSyncLog.WriteEntry("Got creds");
             
             // Setup functions at bottom of code
-            setupErrorLogs();
-            setupTimer();
-            setupExchangeConnection();
+            //setupErrorLogs();
+            //setupTimer();
+            //setupExchangeConnection();
 
             OnStart();
+
+            
 
         }
 
 
 
         // Service management functions BEGIN =================================
+
+
 
         protected void OnStart()
         {
@@ -98,7 +108,7 @@ namespace RoswellSignatureSync
             
             // download a new signature (http://stackoverflow.com/questions/307688/how-to-download-a-file-from-a-url-in-c)
             // update the local signature
-            downloadAndReplaceSignature();
+            //downloadAndReplaceSignature();
             
             // Update the service state to Running.
             serviceStatus.dwCurrentState = ServiceState.SERVICE_RUNNING;
@@ -132,11 +142,14 @@ namespace RoswellSignatureSync
             downloadAndReplaceSignature();
         }
 
+
+
         // Service management functions END ===================================
 
 
 
         // LOCAL SYNCING FUNCTIONS BEGIN ======================================
+
 
 
         // Download the signature from a website, replacing the file at `signatureLocation`. 
@@ -177,7 +190,10 @@ namespace RoswellSignatureSync
         // LOCAL SYNCING FUNCTIONS END ========================================
 
 
+
         // OFFICE365 SYNCING FUNCTIONS BEGIN ==================================
+
+
 
         private static bool RedirectionUrlValidationCallback(string redirectionUrl)
         {
@@ -197,10 +213,17 @@ namespace RoswellSignatureSync
         }
 
 
+
         // OFFICE365 SYNCING FUNCTIONS END ====================================
+
+
+
 
         // Setup functions to clean up earlier code
         // SETUP FUNCTIONS BEGIN ==============================================
+
+
+
 
         protected void setupTimer()
         {
@@ -232,7 +255,7 @@ signatureSyncLog.WriteEntry("trying to get credentials");
 
                 if (credentials.UserName == "")
                 {
-                    //TODO: FIX EVERYTHING THERE FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX 
+                    //TODO: FIX EVERYTHING HERE FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX FIX 
                 }
 
 
@@ -270,58 +293,10 @@ signatureSyncLog.WriteEntry("trying to get credentials");
         {
         }
 
+
+
         // SETUP FUNCTIONS END ================================================
 
 
-        // Taken from https://social.msdn.microsoft.com/Forums/vstudio/en-US/d6a2836a-d587-4068-8630-94f4fb2a2aeb/encrypt-and-decrypt-a-string-in-c?forum=csharpgeneral
-        // TODO: Comment this!
-        // Encryption & Decryption functions BEGIN ============================
-
-        public static string Encrypt(string plainText)
-        {
-            byte[] plainTextBytes = Encoding.UTF8.GetBytes(plainText);
-
-            byte[] keyBytes = new System.Security.Cryptography.Rfc2898DeriveBytes(PasswordHash, Encoding.ASCII.GetBytes(SaltKey)).GetBytes(256 / 8);
-            var symmetricKey = new RijndaelManaged() { Mode = CipherMode.CBC, Padding = PaddingMode.Zeros };
-            var encryptor = symmetricKey.CreateEncryptor(keyBytes, Encoding.ASCII.GetBytes(VIKey));
-
-            byte[] cipherTextBytes;
-
-            using (var memoryStream = new MemoryStream())
-            {
-                using (var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write))
-                {
-                    cryptoStream.Write(plainTextBytes, 0, plainTextBytes.Length);
-                    cryptoStream.FlushFinalBlock();
-                    cipherTextBytes = memoryStream.ToArray();
-                    cryptoStream.Close();
-                }
-                memoryStream.Close();
-            }
-            return Convert.ToBase64String(cipherTextBytes);
-        }
-
-
-        public static string Decrypt(string encryptedText)
-        {
-            byte[] cipherTextBytes = Convert.FromBase64String(encryptedText);
-            byte[] keyBytes = new Rfc2898DeriveBytes(PasswordHash, Encoding.ASCII.GetBytes(SaltKey)).GetBytes(256 / 8);
-            var symmetricKey = new RijndaelManaged() { Mode = CipherMode.CBC, Padding = PaddingMode.None };
-
-            var decryptor = symmetricKey.CreateDecryptor(keyBytes, Encoding.ASCII.GetBytes(VIKey));
-            var memoryStream = new MemoryStream(cipherTextBytes);
-            var cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read);
-            byte[] plainTextBytes = new byte[cipherTextBytes.Length];
-
-            int decryptedByteCount = cryptoStream.Read(plainTextBytes, 0, plainTextBytes.Length);
-            memoryStream.Close();
-            cryptoStream.Close();
-            return Encoding.UTF8.GetString(plainTextBytes, 0, decryptedByteCount).TrimEnd("\0".ToCharArray());
-        }
-
-
-
-
-        // Encryption & Decryption functions END ==============================
     }
 }
