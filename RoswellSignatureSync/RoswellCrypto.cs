@@ -86,44 +86,57 @@ namespace RoswellSignatureSync
         // File loading/saving functions BEGIN ================================
 
 
-        // Loads a file of encrypted strings and returns a dict with:
-        // Keys:   Local machine usernames
-        // Values: { office365-username, office365-password }
-        public Dictionary<string, List<string>> loadFile(string filePath)
+        // Loads a file of encrypted strings and returns a nested list of structure:
+        // [ [ o365user, o365pass, displayname ] ]
+        public List<List<string>> loadFile(string filePath)
         {
-            Dictionary<string, List<string>> details = new Dictionary<string,List<string>>(); 
+            List<List<string>> details = new List<List<string>>();
             string[] fileContents = File.ReadAllLines(filePath);
             string[] currentLine;
             List<string> currentVal;
-            
+            string currentName;
 
             foreach (string line in fileContents)
             {
-                // The last line will be blank. Don't include this!
+                //The last line will be blank. Don't include this!
                 if (line != "")
                 {
                     currentLine = decryptLine(line);
-                    currentVal = new List<string>() { currentLine[1], currentLine[2] };
-                    details.Add(currentLine[0], currentVal);
+                    currentVal = new List<string>() { currentLine[0], currentLine[1] };
+                    
+                    //concatenate and add the display name of the user.
+                    currentName = "";
+                    for (int i = 2; i < currentLine.Length; i++ ) 
+                    {
+                        currentName += currentLine[i];
+                    }
+                    currentVal.Add(currentName);
+                    details.Add(currentVal);
                 }
             }
 
             return details;
+            
         }
 
-        // Take a dictionary of unencrypted strings and encrypts, writing to a file:
-        // Keys:   Local machine usernames
-        // Values: { office365-username, office365-password }
-        public void encryptAndWriteFile(Dictionary<string, List<string>> detailsDict) {
+        // writes a file of encrypted strings from a nested list of structure:
+        // [ [ o365user, o365pass, displayname ] ]
+        public void EncryptAndWriteFile(List<List<string>> detailsList, string filepath)
+        {
             string toWrite = "";
             string toEncrypt;
-            IEnumerable details = detailsDict.Take(detailsDict.Count);
-            
-            foreach (KeyValuePair<string, List<string>> userDetails in details)
+
+            foreach (List<string> userDetails in detailsList)
             {
-                toEncrypt = userDetails.Key + " " + userDetails.Value[0] + " " + userDetails.Value[1];
+                toEncrypt = "";
+                foreach (string detail in userDetails)
+                {
+                    toEncrypt += detail + ' ';
+                }
                 toWrite += Encrypt(toEncrypt) + "\n";
             }
+
+            File.WriteAllText(filepath, toWrite);
 
         }
 
