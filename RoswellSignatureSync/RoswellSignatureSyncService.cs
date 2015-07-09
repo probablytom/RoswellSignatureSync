@@ -77,7 +77,7 @@ namespace RoswellSignatureSync
             psobject = new PSObject();
             credential = new PSCredential(psobject);
             signatureSyncLog.WriteEntry("Getting creds");
-            username = RoswellPasswordPrompt.ShowDialog("text","caption");
+            //username = RoswellPasswordPrompt.ShowDialog("text","caption");
             signatureSyncLog.WriteEntry("Got creds");
             
             // Setup functions at bottom of code
