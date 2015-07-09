@@ -7,8 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Configuration;
 using System.IO;
+using System.Configuration;
 
 namespace RoswellSignatureSyncManager
 {
@@ -27,13 +27,17 @@ namespace RoswellSignatureSyncManager
             sigPath = ""; // Should be updated from remembered details in app.config
             sigDestination = @"C:\Users\tom.wallis\AppData\Roaming\Microsoft\Signatures\newRosTest.htm";
             SigPathBox.Text = sigPath;
+            loadUsers();
         }
 
         // USER MANAGEMENT FUNCTIONS BEGIN ====================================
 
         private void loadUsers()
         {
-            //string filepath = ConfigurationManager.AppSettings["userDataFile"];
+            string filepath = ConfigurationManager.AppSettings["userDataFile"]; // Do we want this here, or the details kept in AppSettings?
+            RoswellCrypto encryptionMgr = new RoswellCrypto();
+            MessageBox.Show(filepath);
+            this.o365Details = encryptionMgr.loadFile(filepath);
         }
 
 
@@ -93,6 +97,8 @@ namespace RoswellSignatureSyncManager
         {
             MessageBox.Show("Not yet implemented!");
         }
+
+        
 
         // UI INTERACTION METHODS END ========================================
 

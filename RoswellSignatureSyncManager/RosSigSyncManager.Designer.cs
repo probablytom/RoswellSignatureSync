@@ -35,6 +35,8 @@
             this.SaveButton = new System.Windows.Forms.Button();
             this.AddUserButton = new System.Windows.Forms.Button();
             this.RemoveUserButton = new System.Windows.Forms.Button();
+            this.UserDetailGrid = new System.Windows.Forms.DataGridView();
+            ((System.ComponentModel.ISupportInitialize)(this.UserDetailGrid)).BeginInit();
             this.SuspendLayout();
             // 
             // SigPathBox
@@ -87,7 +89,7 @@
             // 
             this.AddUserButton.Location = new System.Drawing.Point(15, 59);
             this.AddUserButton.Name = "AddUserButton";
-            this.AddUserButton.Size = new System.Drawing.Size(206, 23);
+            this.AddUserButton.Size = new System.Drawing.Size(210, 23);
             this.AddUserButton.TabIndex = 5;
             this.AddUserButton.Text = "Add User";
             this.AddUserButton.UseVisualStyleBackColor = true;
@@ -95,18 +97,30 @@
             // 
             // RemoveUserButton
             // 
-            this.RemoveUserButton.Location = new System.Drawing.Point(227, 59);
+            this.RemoveUserButton.Location = new System.Drawing.Point(242, 59);
             this.RemoveUserButton.Name = "RemoveUserButton";
-            this.RemoveUserButton.Size = new System.Drawing.Size(225, 23);
+            this.RemoveUserButton.Size = new System.Drawing.Size(210, 23);
             this.RemoveUserButton.TabIndex = 6;
             this.RemoveUserButton.Text = "Remove User";
             this.RemoveUserButton.UseVisualStyleBackColor = true;
+            // 
+            // UserDetailGrid
+            // 
+            this.UserDetailGrid.AllowUserToAddRows = false;
+            this.UserDetailGrid.AllowUserToDeleteRows = false;
+            this.UserDetailGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.UserDetailGrid.Location = new System.Drawing.Point(15, 88);
+            this.UserDetailGrid.Name = "UserDetailGrid";
+            this.UserDetailGrid.ReadOnly = true;
+            this.UserDetailGrid.Size = new System.Drawing.Size(437, 152);
+            this.UserDetailGrid.TabIndex = 7;
             // 
             // SignatureManagerHome
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(464, 281);
+            this.Controls.Add(this.UserDetailGrid);
             this.Controls.Add(this.RemoveUserButton);
             this.Controls.Add(this.AddUserButton);
             this.Controls.Add(this.SaveButton);
@@ -116,6 +130,7 @@
             this.Controls.Add(this.SigPathBox);
             this.Name = "SignatureManagerHome";
             this.Text = "Roswell Signature Sync Manager";
+            ((System.ComponentModel.ISupportInitialize)(this.UserDetailGrid)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -130,6 +145,7 @@
         private System.Windows.Forms.Button SaveButton;
         private System.Windows.Forms.Button AddUserButton;
         private System.Windows.Forms.Button RemoveUserButton;
+        private System.Windows.Forms.DataGridView UserDetailGrid;
     }
 }
 

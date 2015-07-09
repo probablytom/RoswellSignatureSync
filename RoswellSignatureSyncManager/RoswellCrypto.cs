@@ -7,7 +7,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RoswellSignatureSync
+namespace RoswellSignatureSyncManager
 {
     class RoswellCrypto
     {
@@ -90,8 +90,17 @@ namespace RoswellSignatureSync
         // [ [ o365user, o365pass, displayname ] ]
         public List<List<string>> loadFile(string filePath)
         {
+            string[] fileContents = {};
             List<List<string>> details = new List<List<string>>();
-            string[] fileContents = File.ReadAllLines(filePath);
+
+            if (File.Exists(filePath))
+            {
+                fileContents = File.ReadAllLines(filePath);
+            }
+            else
+            {
+                File.Create(filePath); // Create it for later. 
+            }
             string[] currentLine;
             List<string> currentVal;
             string currentName;
