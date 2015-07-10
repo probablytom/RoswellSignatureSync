@@ -21,7 +21,7 @@ namespace RoswellSignatureSyncManager
         // Constructors
         public RoswellCrypto()
         {
-            // Use hard-coded values.
+            // Use hard-coded values. (For now?)
         }
 
 

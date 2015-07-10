@@ -18,6 +18,7 @@ namespace RoswellSignatureSyncManager
         List<List<string>> o365Details;
         string sigPath;
         string sigDestination;
+        bool firstRun;
 
         // Constructor
         public SignatureManagerHome()
@@ -29,11 +30,16 @@ namespace RoswellSignatureSyncManager
             SigPathBox.Text = sigPath;
 
             // Check to see whether this is the first run of the program. 
-            if (ConfigurationManager.AppSettings["sigPath"] == "")
+            if (Properties.Settings.Default.signaturePath == "")
             {
                 // It's the first run! 
-                MessageBox.Show("Looks like this is your first run of Roswell Signature Sync Manager, as no signature location is currently configured.\n" + 
+                MessageBox.Show("Looks like this is your first run of Roswell Signature Sync Manager, as no signature location is currently configured.\n" +
                  "Click 'Browse' to find a signature for your initial setup.");
+                firstRun = true;
+            }
+            else
+            {
+                firstRun = false;
             }
 
         }
@@ -42,7 +48,7 @@ namespace RoswellSignatureSyncManager
 
         private void loadUsers()
         {
-            string filepath = ConfigurationManager.AppSettings["userDataFile"]; // Do we want this here, or the details kept in AppSettings?
+            string filepath = Properties.Settings.Default.userDataFile; // Do we want this here, or the details kept in AppSettings?
             RoswellCrypto encryptionMgr = new RoswellCrypto();
             MessageBox.Show(filepath);
             this.o365Details = encryptionMgr.loadFile(filepath);
@@ -59,25 +65,11 @@ namespace RoswellSignatureSyncManager
         // Move the file from its old location to the new one specified by the filePicker. 
         private void SaveButton_Click(object sender, EventArgs e)
         {
-            if (File.Exists(SigPathBox.Text))
-            {
-                try
-                {
-                    File.Copy(SigPathBox.Text, sigDestination, true);
-                    ConfigurationManager.AppSettings["sigPath"] = SigPathBox.Text; // update App.config
-                    MessageBox.Show("Signature changed.");
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error copying new signature!\nAborted process.");
-                    MessageBox.Show("Error reads: \n" + ex.Message);
-                }
-            }
-            else
-            {
-                MessageBox.Show("The specified file doesn't exist.");
-            }
+            updateSignature();
+            updateDestination();
+            Properties.Settings.Default.Save();
         }
+       
 
 
         // Simply close the program. (In future, save settings? Is this done as and when settings are changed?)
@@ -105,20 +97,147 @@ namespace RoswellSignatureSyncManager
 
             SigPathBox.Text = filepath;
 
+            if (firstRun) Properties.Settings.Default["signaturePath"] = filepath;
+
         }
 
-        private void UpdateButton_Click(object sender, EventArgs e)
+
+        // Selects a folder via a FolderBrowserDialog.
+        private void SigDestinationBrowse_Click(object sender, EventArgs e)
         {
+            string dirpath = sigDestinationBox.Text;
+
+            // Create & configure a directory picker. 
+            FolderBrowserDialog dirPicker = new FolderBrowserDialog();
+            dirPicker.ShowNewFolderButton = true;
+            dirPicker.Description = "Please select a place to put the signature to be synced.";
+            if (dirPicker.ShowDialog() == DialogResult.OK)
+            {
+                dirpath = dirPicker.SelectedPath;
+            }
+
+            sigDestinationBox.Text = dirpath;
+
+            if (firstRun) Properties.Settings.Default["signatureDestination"] = dirpath;
 
         }
 
-        private void UpdateButton_Hover(object sender, EventArgs e)
+        private void PathUpdateButton_Click(object sender, EventArgs e)
         {
-
+            if (File.Exists(SigPathBox.Text))
+            {
+                Properties.Settings.Default["signaturePath"] = SigPathBox.Text;
+                MessageBox.Show("Update successful!\n\nDestination changed to:\n" + sigDestinationBox.Text);
+            }
+            else
+            {
+                MessageBox.Show("Could not update signature.\nFile does not exist.");
+            }
         }
+
+        private void sigDestinationUpdate_Click(object sender, EventArgs e)
+        {
+            if (Directory.Exists(sigDestinationBox.Text))
+            {
+                Properties.Settings.Default["signatureDestination"] = sigDestinationBox.Text;
+                MessageBox.Show("Update successful!\n\nDestination changed to:\n" + sigDestinationBox.Text);
+            }
+            else
+            {
+                MessageBox.Show("Could not update hosting destination.\nDirectory does not exist.");
+            }
+        }
+
         
 
-        // UI INTERACTION METHODS END ========================================
+        // UI INTERACTION METHODS END =========================================
+
+        // HELPER FUNCTIONS BEGIN =============================================
+
+        // Update signature.
+        public void updateSignature()
+        {
+            if (File.Exists(SigPathBox.Text))
+            {
+                try
+                {
+                    File.Copy(SigPathBox.Text, Properties.Settings.Default.signatureDestination, true);
+                    Properties.Settings.Default["signaturePath"] = SigPathBox.Text; // update App.config
+                    MessageBox.Show("Signature changed.");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error copying new signature!\nAborted process.");
+                    MessageBox.Show("Error reads: \n" + ex.Message);
+                }
+            }
+            else
+            {
+                MessageBox.Show("The specified file doesn't exist.\n" +
+                    "Please select another file.");
+            }
+        }
+
+
+        // Update hosting destination
+        public void updateDestination()
+        {
+            if (Directory.Exists(sigDestinationBox.Text))
+            {
+                try
+                {
+                    string path = Properties.Settings.Default.signaturePath;
+                    string destination = Properties.Settings.Default.signatureDestination;
+                    File.Copy(path, sigDestinationBox.Text + filenameOf(path), true);
+                    Properties.Settings.Default["signatureDestination"] = sigDestinationBox.Text;
+                    MessageBox.Show("Signature destination changed.");
+                }
+                catch (Exception ex)
+                {
+                    if (Properties.Settings.Default.signatureDestination == "")
+                        MessageBox.Show("Error updating destination! It appears to be blank. ");
+                    MessageBox.Show("Error changing the destination! Please contact Roswell I.T. for help.");
+                    
+                }
+            }
+            else
+            {
+                MessageBox.Show("The specified directory doesn't exist.\n" + 
+                    "Please select another directory.");
+            }
+        }
+
+        public void transferSig()
+        {
+            if (File.Exists(Properties.Settings.Default.signaturePath))
+            {
+                if (Directory.Exists(Properties.Settings.Default.signatureDestination))
+                {
+                    // Everything exists! Let's transfer.
+                    // try-catch incase there's a problem with permissions &c.
+                    File.Copy(Properties.Settings.Default.signaturePath, Properties.Settings.Default.signaturePath + Properties.Settings.Default.hostedSigName);
+                }
+                else
+                {
+                    MessageBox.Show("The directory at the saved destination path doesn't exist!\n\nAborting.");
+                }
+            }
+            else
+            {
+                MessageBox.Show("The file at the saved signature path doesn't exist!\n\nAborting.");
+            }
+        }
+
+
+        private string filenameOf(string path)
+        {
+            string[] splitPath = path.Split('\\');
+            return splitPath[splitPath.Length - 1];
+        }
+
+
+
+        // HELPER FUNCTIONS END ===============================================
 
     }
 }

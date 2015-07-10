@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace RoswellSignatureSyncManager.Properties {
+namespace RoswellSignatureSync.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -23,30 +23,27 @@ namespace RoswellSignatureSyncManager.Properties {
             }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string userDataFile {
+        public string sigDestination {
             get {
-                return ((string)(this["userDataFile"]));
+                return ((string)(this["sigDestination"]));
+            }
+            set {
+                this["sigDestination"] = value;
             }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string signatureDestination {
+        public string sigHostedLocation {
             get {
-                return ((string)(this["signatureDestination"]));
+                return ((string)(this["sigHostedLocation"]));
             }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string signaturePath {
-            get {
-                return ((string)(this["signaturePath"]));
+            set {
+                this["sigHostedLocation"] = value;
             }
         }
         
