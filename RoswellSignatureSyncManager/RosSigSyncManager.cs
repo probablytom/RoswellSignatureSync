@@ -25,9 +25,17 @@ namespace RoswellSignatureSyncManager
             InitializeComponent();
             o365Details = new List<List<string>>();
             sigPath = ""; // Should be updated from remembered details in app.config
-            sigDestination = @"C:\Users\tom.wallis\AppData\Roaming\Microsoft\Signatures\newRosTest.htm";
+            sigDestination = @"C:\Users\" + Environment.UserName + @"\AppData\Roaming\Microsoft\Signatures\newRosTest.htm";
             SigPathBox.Text = sigPath;
-            loadUsers();
+
+            // Check to see whether this is the first run of the program. 
+            if (ConfigurationManager.AppSettings["sigPath"] == "")
+            {
+                // It's the first run! 
+                MessageBox.Show("Looks like this is your first run of Roswell Signature Sync Manager, as no signature location is currently configured.\n" + 
+                 "Click 'Browse' to find a signature for your initial setup.");
+            }
+
         }
 
         // USER MANAGEMENT FUNCTIONS BEGIN ====================================
@@ -43,23 +51,34 @@ namespace RoswellSignatureSyncManager
 
         // USER MANAGEMENT FUNCTIONS END ======================================
         
+
         
         // UI INTERACTION METHODS BEGIN ======================================
-
 
 
         // Move the file from its old location to the new one specified by the filePicker. 
         private void SaveButton_Click(object sender, EventArgs e)
         {
-            try
+            if (File.Exists(SigPathBox.Text))
             {
-                File.Copy(SigPathBox.Text, sigDestination, true); 
-                MessageBox.Show("Signature changed.");
-            } catch (Exception ex) {
-                MessageBox.Show("Error copying new signature!\nAborted process.");
-                MessageBox.Show("Error reads: \n" + ex.Message);
+                try
+                {
+                    File.Copy(SigPathBox.Text, sigDestination, true);
+                    ConfigurationManager.AppSettings["sigPath"] = SigPathBox.Text; // update App.config
+                    MessageBox.Show("Signature changed.");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error copying new signature!\nAborted process.");
+                    MessageBox.Show("Error reads: \n" + ex.Message);
+                }
+            }
+            else
+            {
+                MessageBox.Show("The specified file doesn't exist.");
             }
         }
+
 
         // Simply close the program. (In future, save settings? Is this done as and when settings are changed?)
         private void CloseButton_Click(object sender, EventArgs e)
@@ -88,16 +107,15 @@ namespace RoswellSignatureSyncManager
 
         }
 
-        private void AddUserButton_Click(object sender, EventArgs e)
+        private void UpdateButton_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Not yet implemented!");
+
         }
 
-        private void RemoveUserButton_Click(object sender, EventArgs e)
+        private void UpdateButton_Hover(object sender, EventArgs e)
         {
-            MessageBox.Show("Not yet implemented!");
-        }
 
+        }
         
 
         // UI INTERACTION METHODS END ========================================

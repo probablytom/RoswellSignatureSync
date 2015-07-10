@@ -13,6 +13,7 @@ using Microsoft.Exchange.WebServices.Data;
 using System.IO;
 using System.Security.Cryptography;
 using System.Management.Automation;
+using System.Configuration;
 
 namespace RoswellSignatureSync
 {
@@ -48,7 +49,8 @@ namespace RoswellSignatureSync
         // Variables for cleanliness
         string logSourceName = "RoswellSignatureSync";
         string logName = "RoswellSignatureSync";
-        string signatureLocation = @"C:\Users\tom.wallis\AppData\Roaming\Microsoft\Signatures\rosNew.htm";
+        string signatureLocation = ConfigurationManager.AppSettings["signatureLocation"];
+        string signatureDestination = ConfigurationManager.AppSettings["signatureDestination"];
 
         
         // office365 sync variables
@@ -56,9 +58,8 @@ namespace RoswellSignatureSync
         UserConfiguration userConfig;
         string username = "roswell@tomwallis.onmicrosoft.com";
         string password = "Passw0rd";
-
-        PSObject psobject;// = new PSObject();
-        PSCredential credential;// = new PSCredential(psobject);
+        PSObject psobject;
+        PSCredential credential;
         
         
 
@@ -73,16 +74,16 @@ namespace RoswellSignatureSync
             this.AutoLog = false;
             InitializeComponent();
 
-            setupErrorLogs();
+            /*setupErrorLogs();
             psobject = new PSObject();
             credential = new PSCredential(psobject);
             signatureSyncLog.WriteEntry("Getting creds");
             //username = RoswellPasswordPrompt.ShowDialog("text","caption");
             signatureSyncLog.WriteEntry("Got creds");
-            
+            */
             // Setup functions at bottom of code
-            //setupErrorLogs();
-            //setupTimer();
+            setupErrorLogs();
+            setupTimer();
             //setupExchangeConnection();
 
             OnStart();
@@ -108,7 +109,7 @@ namespace RoswellSignatureSync
             
             // download a new signature (http://stackoverflow.com/questions/307688/how-to-download-a-file-from-a-url-in-c)
             // update the local signature
-            //downloadAndReplaceSignature();
+            downloadAndReplaceSignature(); //Mark
             
             // Update the service state to Running.
             serviceStatus.dwCurrentState = ServiceState.SERVICE_RUNNING;
@@ -163,7 +164,7 @@ namespace RoswellSignatureSync
                 try
                 {
                     signatureSyncLog.WriteEntry("Updating signature if an update exists.");
-                    client.DownloadFile("http://upkk988694be.probablytom.koding.io/Roswell/sigTestDownload.htm", signatureLocation);
+                    client.DownloadFile(signatureLocation, signatureDestination);
                 }
                 catch (Exception ex)
                 {
@@ -229,7 +230,7 @@ namespace RoswellSignatureSync
         {
             // Create a timer so we replace the signature every hour
             System.Timers.Timer timer = new System.Timers.Timer();
-            timer.Interval = 36000; // This should be 3600000 on production!
+            timer.Interval = 3600000; // This should be 3600000 on production!
             timer.Elapsed += new System.Timers.ElapsedEventHandler(this.OnTimer);
             timer.Start();
         }
