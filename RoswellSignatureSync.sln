@@ -8,6 +8,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoswellSignatureSyncManager", "RoswellSignatureSyncManager\RoswellSignatureSyncManager.csproj", "{2A2954A6-B4C4-4617-8DE9-440D48B87C83}"
 EndProject
 Project("{6141683F-8A12-4E36-9623-2EB02B2C2303}") = "Setup3", "Setup3\Setup3.isproj", "{365B0411-56F6-4D2B-A9D3-8C333FC5A757}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2A2954A6-B4C4-4617-8DE9-440D48B87C83} = {2A2954A6-B4C4-4617-8DE9-440D48B87C83}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

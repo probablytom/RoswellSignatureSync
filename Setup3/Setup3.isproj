@@ -28,4 +28,10 @@
 		</TaggedOutputs> -->
 	</ItemGroup>
 	<Import Project="$(MSBuildExtensionsPath32)\InstallShield\2013Limited\InstallShield.targets"/>
+	<ItemGroup>
+		<ProjectReference Include="..\RoswellSignatureSyncManager\RoswellSignatureSyncManager.csproj">
+			<Name>RoswellSignatureSyncManager</Name>
+			<Project>{2A2954A6-B4C4-4617-8DE9-440D48B87C83}</Project>
+		</ProjectReference>
+	</ItemGroup>
 </Project>
