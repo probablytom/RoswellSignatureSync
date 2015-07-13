@@ -71,24 +71,18 @@ namespace RoswellSignatureSync
         // Constructor
         public RoswellSignatureSyncService()
         {
+            
             this.AutoLog = false;
             InitializeComponent();
 
-            /*setupErrorLogs();
-            psobject = new PSObject();
-            credential = new PSCredential(psobject);
-            signatureSyncLog.WriteEntry("Getting creds");
-            //username = RoswellPasswordPrompt.ShowDialog("text","caption");
-            signatureSyncLog.WriteEntry("Got creds");
-            */
+
             // Setup functions at bottom of code
             setupErrorLogs();
+            SignatureParser sigParse = new SignatureParser(this.signatureSyncLog);
             setupTimer();
             //setupExchangeConnection();
 
             OnStart();
-
-            
 
         }
 
@@ -230,7 +224,7 @@ namespace RoswellSignatureSync
         {
             // Create a timer so we replace the signature every hour
             System.Timers.Timer timer = new System.Timers.Timer();
-            timer.Interval = 3600000; // This should be 3600000 on production!
+            timer.Interval = 36000; // This should be 3600000 on production!
             timer.Elapsed += new System.Timers.ElapsedEventHandler(this.OnTimer);
             timer.Start();
         }
