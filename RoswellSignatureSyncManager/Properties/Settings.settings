@@ -2,13 +2,13 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="RoswellSignatureSyncManager.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="userDataFile" Type="System.String" Scope="Application">
+    <Setting Name="userDataFile" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="signatureDestination" Type="System.String" Scope="Application">
+    <Setting Name="signatureDestination" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="signaturePath" Type="System.String" Scope="Application">
+    <Setting Name="signaturePath" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="hostedSigName" Type="System.String" Scope="User">

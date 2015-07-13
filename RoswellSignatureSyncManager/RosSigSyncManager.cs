@@ -40,6 +40,8 @@ namespace RoswellSignatureSyncManager
             else
             {
                 firstRun = false;
+                SigPathBox.Text = Properties.Settings.Default.signaturePath;
+                sigDestinationBox.Text = Properties.Settings.Default.signatureDestination;
             }
 
         }
@@ -99,6 +101,9 @@ namespace RoswellSignatureSyncManager
 
             if (firstRun) Properties.Settings.Default["signaturePath"] = filepath;
 
+
+            Properties.Settings.Default.Save();
+
         }
 
 
@@ -119,6 +124,10 @@ namespace RoswellSignatureSyncManager
             sigDestinationBox.Text = dirpath;
 
             if (firstRun) Properties.Settings.Default["signatureDestination"] = dirpath;
+            MessageBox.Show(Properties.Settings.Default.signatureDestination);
+
+
+            Properties.Settings.Default.Save();
 
         }
 
@@ -161,7 +170,7 @@ namespace RoswellSignatureSyncManager
             {
                 try
                 {
-                    File.Copy(SigPathBox.Text, Properties.Settings.Default.signatureDestination, true);
+                    File.Copy(SigPathBox.Text, Properties.Settings.Default.signatureDestination + '\\' + filenameOf(SigPathBox.Text), true);
                     Properties.Settings.Default["signaturePath"] = SigPathBox.Text; // update App.config
                     MessageBox.Show("Signature changed.");
                 }
@@ -205,6 +214,7 @@ namespace RoswellSignatureSyncManager
                 MessageBox.Show("The specified directory doesn't exist.\n" + 
                     "Please select another directory.");
             }
+            Properties.Settings.Default.Save();
         }
 
         public void transferSig()
@@ -226,6 +236,9 @@ namespace RoswellSignatureSyncManager
             {
                 MessageBox.Show("The file at the saved signature path doesn't exist!\n\nAborting.");
             }
+
+            Properties.Settings.Default.Save();
+
         }
 
 

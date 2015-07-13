@@ -23,30 +23,39 @@ namespace RoswellSignatureSyncManager.Properties {
             }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string userDataFile {
             get {
                 return ((string)(this["userDataFile"]));
             }
+            set {
+                this["userDataFile"] = value;
+            }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string signatureDestination {
             get {
                 return ((string)(this["signatureDestination"]));
             }
+            set {
+                this["signatureDestination"] = value;
+            }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string signaturePath {
             get {
                 return ((string)(this["signaturePath"]));
+            }
+            set {
+                this["signaturePath"] = value;
             }
         }
         
