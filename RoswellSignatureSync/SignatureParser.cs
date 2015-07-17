@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.DirectoryServices;
 using System.DirectoryServices.AccountManagement;
 using System.Linq;
+using System.Management;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -74,8 +76,51 @@ namespace RoswellSignatureSync
             // Testing UMExts:
             PrincipalContext domain = new PrincipalContext(ContextType.Domain);
             UserPrincipal user = UserPrincipal.FindByIdentity(domain, Environment.UserDomainName);
+            this.eventLog.WriteEntry("User Domain Name:" + Environment.UserDomainName);
+            this.eventLog.WriteEntry("UserName: " + Environment.UserName);
+
+            ManagementObjectSearcher query = new ManagementObjectSearcher("select * from Win32_UserProfile where Loaded = True");
+            this.eventLog.WriteEntry("Made query...");
+            this.eventLog.WriteEntry("Got resultset...");
             try
             {
+
+                foreach (ManagementObject result in query.Get())
+                {
+                    this.eventLog.WriteEntry("Got a result!");
+                    
+                    foreach (PropertyData property in result.Properties)
+                    {
+                        this.eventLog.WriteEntry(
+               "---------------------------------------");
+                        this.eventLog.WriteEntry(property.Name);
+                        this.eventLog.WriteEntry("Description: " +
+                            property.Qualifiers["Description"].Value);
+
+                        this.eventLog.WriteEntry("Type: ");
+                        this.eventLog.WriteEntry(property.Type.ToString());
+
+
+                        this.eventLog.WriteEntry("Qualifiers: ");
+                        foreach (QualifierData q in
+                            property.Qualifiers)
+                        {
+                            this.eventLog.WriteEntry(q.Name);
+                        }
+                    }
+
+
+
+                }
+            }
+            catch (Exception ex)
+            {
+                eventLog.WriteEntry("Problem encountred!\nMessage:\n" + ex.Message);
+            }
+
+            try
+            {
+
                 testProperty("displayname", user);
                 testProperty("SamAccountName", user);
                 testProperty("givenname", user);

@@ -284,6 +284,7 @@ signatureSyncLog.WriteEntry("trying to get credentials");
             signatureSyncLog.Log = logName;
         }
 
+        // TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO
         protected void configurePasswordStorage()
         {
         }
