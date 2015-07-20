@@ -151,7 +151,7 @@ namespace LocalSignatureManager
         }
 
 
-        public List<List<string>> getCurrentUserDetails()
+        public static List<List<string>> getCurrentUserDetails()
         {
             List<List<string>> details = new List<List<string>>();
             List<string> currentDetails = new List<string>();
@@ -182,22 +182,20 @@ namespace LocalSignatureManager
             return details;
         }
 
-        public bool setCurrentUserDetails(string details)
+        public static bool setCurrentUserDetails(List<List<string>> userDetailsList)
         {
 
             string toWrite = "";
 
-            // Encrypt the details.
-            // string should be of the form "username password displayname", so we can go ahead and encrypt the details now. 
-            string[] detailsPerLine = details.Split('\n');
-            foreach (string detail in detailsPerLine)
+            // Convert the nested list to an encrypted string
+            foreach (List<string> detailSet in userDetailsList)
             {
-                if (detail != detailsPerLine[0])
+                if (toWrite != "")
                     toWrite += '\n';
-
-                toWrite += Encrypt(detail);
+                toWrite += Encrypt(detailSet[0] + ' ' + detailSet[1] + ' ' + detailSet[2]); // Add all of the details to the detail set. 
             }
 
+            
             // Attempt to write. 
             try
             {
@@ -215,7 +213,6 @@ namespace LocalSignatureManager
                 return false;
             }
         }
-
 
 
         // File loading/saving functions END ==================================
