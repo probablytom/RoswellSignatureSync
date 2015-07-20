@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoswellSignatureSync", "Ros
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoswellSignatureSyncManager", "RoswellSignatureSyncManager\RoswellSignatureSyncManager.csproj", "{2A2954A6-B4C4-4617-8DE9-440D48B87C83}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocalSignatureManager", "LocalSignatureManager\LocalSignatureManager.csproj", "{B8DFA88A-2E7F-44C1-91B6-5E93B7AA01AA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{2A2954A6-B4C4-4617-8DE9-440D48B87C83}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2A2954A6-B4C4-4617-8DE9-440D48B87C83}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2A2954A6-B4C4-4617-8DE9-440D48B87C83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8DFA88A-2E7F-44C1-91B6-5E93B7AA01AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8DFA88A-2E7F-44C1-91B6-5E93B7AA01AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8DFA88A-2E7F-44C1-91B6-5E93B7AA01AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8DFA88A-2E7F-44C1-91B6-5E93B7AA01AA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -26,5 +26,24 @@ namespace LocalSignatureManager
         {
 
         }
+
+        private void SyncManagerForm_Load(object sender, EventArgs e)
+        {
+            List<string> UserListContents = new List<string>();
+            List<List<string>> userDetails = new List<List<string>>();  //  [[o365 username, o365 pass, displayname]]
+
+            
+            
+            // TODO: GET USER DETAILS AND PUT IN userDetails TODO TODO TODO TODO
+
+
+
+            // Add the displayname of each user to the list to be displayed. 
+            List<List<string>> details = RoswellCrypto.getCurrentUserDetails();
+            
+
+            // Add the displayname of each user found to the list displayed. 
+            UserList.DataSource = UserListContents;
+        }
     }
 }

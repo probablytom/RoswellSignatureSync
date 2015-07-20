@@ -95,6 +95,7 @@
             this.Controls.Add(this.UserList);
             this.Name = "SyncManagerForm";
             this.Text = "Signature Sync Manager Local Edition";
+            this.Load += new System.EventHandler(this.SyncManagerForm_Load);
             this.ResumeLayout(false);
 
         }

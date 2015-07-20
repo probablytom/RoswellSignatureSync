@@ -54,6 +54,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RoswellCrypto.cs" />
+    <Compile Include="Settings.cs" />
     <EmbeddedResource Include="RosSigSyncManager.resx">
       <DependentUpon>RosSigSyncManager.cs</DependentUpon>
     </EmbeddedResource>

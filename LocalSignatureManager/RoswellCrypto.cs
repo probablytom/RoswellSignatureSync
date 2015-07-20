@@ -6,8 +6,9 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
-namespace RoswellSignatureSync
+namespace LocalSignatureManager
 {
     class RoswellCrypto
     {
@@ -148,6 +149,73 @@ namespace RoswellSignatureSync
             File.WriteAllText(filepath, toWrite);
 
         }
+
+
+        public List<List<string>> getCurrentUserDetails()
+        {
+            List<List<string>> details = new List<List<string>>();
+            List<string> currentDetails = new List<string>();
+
+            // Search directory of files for this program for relevant user details
+            string filepath = Environment.GetEnvironmentVariable("PROGRAMFILES") + "\\Roswell Signature Sync\\";
+            string username = System.Security.Principal.WindowsIdentity.GetCurrent().Name; // Current username
+            filepath += Encrypt(username) + ".dts";
+
+            foreach (string encryptedDetails in File.ReadAllLines(filepath))
+            {
+
+
+                string[] unSortedDetails = Decrypt(encryptedDetails).Split(' ');
+                currentDetails.Add(unSortedDetails[0]);
+                currentDetails.Add(unSortedDetails[1]);
+
+                // Extract and concatenate the display name
+                string displayname = unSortedDetails[2];
+                for (int i = 3; i < unSortedDetails.Length; i++)
+                {
+                    displayname += ' ' + unSortedDetails[i];
+                }
+                currentDetails.Add(displayname);
+                details.Add(currentDetails);
+            }
+
+            return details;
+        }
+
+        public bool setCurrentUserDetails(string details)
+        {
+
+            string toWrite = "";
+
+            // Encrypt the details.
+            // string should be of the form "username password displayname", so we can go ahead and encrypt the details now. 
+            string[] detailsPerLine = details.Split('\n');
+            foreach (string detail in detailsPerLine)
+            {
+                if (detail != detailsPerLine[0])
+                    toWrite += '\n';
+
+                toWrite += Encrypt(detail);
+            }
+
+            // Attempt to write. 
+            try
+            {
+                string filepath = Environment.GetEnvironmentVariable("PROGRAMFILES") + "\\Roswell Signature Sync\\";
+                string username = System.Security.Principal.WindowsIdentity.GetCurrent().Name; // Current username
+                filepath += Encrypt(username) + ".dts";
+                File.WriteAllText(filepath, toWrite);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // We need error logging here! TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO 
+                Console.WriteLine("Had trouble writing to path; could not save data.\nError reads:\n" + ex.Message); // This should be an error log write. 
+                MessageBox.Show("Had trouble writing to path; could not save data.\nError reads:\n" + ex.Message); // Message should be changed once error logging is implemented. 
+                return false;
+            }
+        }
+
 
 
         // File loading/saving functions END ==================================
