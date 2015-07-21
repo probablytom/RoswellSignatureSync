@@ -3,11 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.DirectoryServices.AccountManagement;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+
 
 namespace LocalSignatureManager
 {
@@ -76,6 +78,21 @@ namespace LocalSignatureManager
                 // We have valid details, now let's verify that they're correct!
                 if (verifyConnection())
                 {
+                    
+                    // Now, we've set up the connection and verified & validated the details.
+                    // Save those details for later and exit. 
+
+                    //SAVESAVESAVESAVESAVE
+                    List<string> details = new List<string>();
+                    details.Add(UsernameBox.Text);
+                    details.Add(PasswordBox1.Text);
+                    details.Add(UserPrincipal.Current.DisplayName);
+                    List<List<string>> toSet = new List<List<string>>();
+                    toSet.Add(details);
+
+                    RoswellCrypto.setCurrentUserDetails(toSet);
+
+                    Close();
 
                 }
 
@@ -103,9 +120,14 @@ namespace LocalSignatureManager
             if (passwordsMatch())
             {
 
-                setupExchangeConnection();
-
-                return true;
+                if (setupExchangeConnection())
+                {
+                    return true;
+                }
+                else
+                {
+                    MessageBox.Show("ERROR: Couldn't set up connection  to office365 with the details provided.\nYour password for " + UsernameBox.Text + " may be incorrect, or you may not be connected to the internet.");
+                }
 
             }
             else  // Passwords didn't match!
@@ -117,7 +139,7 @@ namespace LocalSignatureManager
             
         }
 
-        protected void setupExchangeConnection()
+        protected bool setupExchangeConnection()
         {
             // Trash the old connection, if there is one. 
             exchangeService = new ExchangeService();
@@ -127,24 +149,26 @@ namespace LocalSignatureManager
             string password = PasswordBox1.Text;
             try
             {
-            // Connect to office365 Exchange
-            exchangeService = new ExchangeService(ExchangeVersion.Exchange2010_SP2); // For office365, this appears to be right -- see working powershell script.
-            exchangeService.Credentials = new WebCredentials(username, password);
-            exchangeService.UseDefaultCredentials = false; // CAN WE USE THIS?! UNSAFE WITH OFFICE365?! https://msdn.microsoft.com/en-us/library/office/dn567668.aspx#Create
-            exchangeService.AutodiscoverUrl(username, RedirectionUrlValidationCallback);
+                // Connect to office365 Exchange
+                exchangeService = new ExchangeService(ExchangeVersion.Exchange2010_SP2); // For office365, this appears to be right -- see working powershell script.
+                exchangeService.Credentials = new WebCredentials(username, password);
+                exchangeService.UseDefaultCredentials = false; // CAN WE USE THIS?! UNSAFE WITH OFFICE365?! https://msdn.microsoft.com/en-us/library/office/dn567668.aspx#Create
+                exchangeService.AutodiscoverUrl(username, RedirectionUrlValidationCallback);
 
-            // Get a user config object
-            userConfig = UserConfiguration.Bind(exchangeService,
-                                                                  "OWA.UserOptions",
-                                                                  WellKnownFolderName.Root,
-                                                                  UserConfigurationProperties.All);
+                // Get a user config object
+                userConfig = UserConfiguration.Bind(exchangeService,
+                                                                      "OWA.UserOptions",
+                                                                      WellKnownFolderName.Root,
+                                                                      UserConfigurationProperties.All);
 
-            // We SHOULD now be set up! In theory.
+                // We SHOULD now be set up! In theory.
+                return true;
             }
             catch (Exception ex)
             {
                 MessageBox.Show("Couldn't make a connection to office365.\n\nAre you connected to the internet?\nIf so, the details entered may be incorrect.");
                 EventLog.WriteEntry("Couldn't make a connection to office365.\nEither the internet connection is down, or the password entered for user " + username + "is incorrect.\n\nException raised reads:" + ex.Message);
+                return false;
             }
         }
 
