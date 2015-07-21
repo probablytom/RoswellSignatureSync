@@ -39,7 +39,7 @@ namespace LocalSignatureManager
 
             
             
-            // TODO: GET USER DETAILS AND PUT IN userDetails TODO TODO TODO TODO
+            // TODO: GET USER DETAILS AND PUT IN BOXES TODO TODO TODO TODO TODO
 
 
 
@@ -66,6 +66,35 @@ namespace LocalSignatureManager
         {
             // Get password and check login
             
+            // First, let's make sure the passwords match. 
+            if (passwordsMatch())
+            {
+
+                // We have valid details, now let's verify that they're correct!
+
+
+            }
+            else
+            {
+                // Passwords didn't match!
+                MessageBox.Show("ERROR. Passwords don't match.");
+                EventLog.WriteEntry("Couldn't save and exit: Passwords did not match.");
+            }
+
         }
+
+        // HELPER FUNCTIONS BEGIN =============================================
+
+        public bool passwordsMatch()
+        {
+            return PasswordBox1.Text == PasswordBox2.Text;
+        }
+
+        private void EventLog_EntryWritten(object sender, System.Diagnostics.EntryWrittenEventArgs e)
+        {
+
+        }
+
+        // HELPER FUNCTIONS END ===============================================
     }
 }
