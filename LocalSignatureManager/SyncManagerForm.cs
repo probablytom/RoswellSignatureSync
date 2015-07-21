@@ -21,6 +21,7 @@ namespace LocalSignatureManager
         string originalDetails = "";
         ExchangeService exchangeService;
         UserConfiguration userConfig;
+        RoswellCrypto encoder = new RoswellCrypto();
 
 
         public SyncManagerForm()
@@ -50,17 +51,28 @@ namespace LocalSignatureManager
 
             // Add the displayname of each user to the list to be displayed.
             RoswellCrypto.PasswordHash = PasswordBox1.Text;
-            userDetailsList = RoswellCrypto.getCurrentUserDetails();  //  [[o365 username, o365 pass, displayname]]
-            for (int i = 0; i < userDetailsList.Count; i++)
+            userDetailsList = encoder.getCurrentUserDetails();  //  [[o365 username, o365 pass, displayname]]
+
+            // Are details present?
+            if (userDetailsList == null)
             {
-                UserListContents.Add(userDetailsList[i][2]);
+                MessageBox.Show("Looks like this is your first time running the Signature Sync Manager.\nPlease enter office365 login detials for sync.");
             }
+            else
+            {
 
-            // Add the displayname of each user found to the list displayed. 
-            UsernameBox.Text = UserListContents[0];
+                for (int i = 0; i < userDetailsList.Count; i++)
+                {
+                    UserListContents.Add(userDetailsList[i][2]);
+                }
 
-            // Remember this detail in case we need to revert!
-            originalDetails = UserListContents[0];
+                // Add the displayname of each user found to the list displayed. 
+                UsernameBox.Text = UserListContents[0];
+
+                // Remember this detail in case we need to revert!
+                originalDetails = UserListContents[0];
+
+            }
         }
 
         private void RevertButton_Click(object sender, EventArgs e)
@@ -92,8 +104,7 @@ namespace LocalSignatureManager
                     toSet.Add(details);
 
                     // Exit
-                    RoswellCrypto.PasswordHash = PasswordBox1.Text;
-                    RoswellCrypto.setCurrentUserDetails(toSet);
+                    encoder.setCurrentUserDetails(toSet);
 
                     Close();
 
