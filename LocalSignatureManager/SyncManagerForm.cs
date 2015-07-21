@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Exchange.WebServices.Data;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -16,6 +17,8 @@ namespace LocalSignatureManager
         
         List<List<string>> userDetailsList;
         string originalDetails = "";
+        ExchangeService exchangeService;
+        UserConfiguration userConfig;
 
 
         public SyncManagerForm()
@@ -71,7 +74,10 @@ namespace LocalSignatureManager
             {
 
                 // We have valid details, now let's verify that they're correct!
+                if (verifyConnection())
+                {
 
+                }
 
             }
             else
@@ -90,11 +96,80 @@ namespace LocalSignatureManager
             return PasswordBox1.Text == PasswordBox2.Text;
         }
 
-        private void EventLog_EntryWritten(object sender, System.Diagnostics.EntryWrittenEventArgs e)
+        // Check whether we can access o345 using the username and password in the boxes provided. 
+        private bool verifyConnection()
         {
 
+            if (passwordsMatch())
+            {
+
+                setupExchangeConnection();
+
+                return true;
+
+            }
+            else  // Passwords didn't match!
+            {
+                MessageBox.Show("ERROR: Passwords don't match.");
+            }
+
+            return false;
+            
         }
 
+        protected void setupExchangeConnection()
+        {
+            // Trash the old connection, if there is one. 
+            exchangeService = new ExchangeService();
+            userConfig = null;
+
+            string username = UsernameBox.Text;
+            string password = PasswordBox1.Text;
+            try
+            {
+            // Connect to office365 Exchange
+            exchangeService = new ExchangeService(ExchangeVersion.Exchange2010_SP2); // For office365, this appears to be right -- see working powershell script.
+            exchangeService.Credentials = new WebCredentials(username, password);
+            exchangeService.UseDefaultCredentials = false; // CAN WE USE THIS?! UNSAFE WITH OFFICE365?! https://msdn.microsoft.com/en-us/library/office/dn567668.aspx#Create
+            exchangeService.AutodiscoverUrl(username, RedirectionUrlValidationCallback);
+
+            // Get a user config object
+            userConfig = UserConfiguration.Bind(exchangeService,
+                                                                  "OWA.UserOptions",
+                                                                  WellKnownFolderName.Root,
+                                                                  UserConfigurationProperties.All);
+
+            // We SHOULD now be set up! In theory.
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Couldn't make a connection to office365.\n\nAre you connected to the internet?\nIf so, the details entered may be incorrect.");
+                EventLog.WriteEntry("Couldn't make a connection to office365.\nEither the internet connection is down, or the password entered for user " + username + "is incorrect.\n\nException raised reads:" + ex.Message);
+            }
+        }
+
+
+
+        private static bool RedirectionUrlValidationCallback(string redirectionUrl)
+        {
+            // The default for the validation callback is to reject the URL.
+            bool result = false;
+
+            Uri redirectionUri = new Uri(redirectionUrl);
+
+            // Validate the contents of the redirection URL. In this simple validation
+            // callback, the redirection URL is considered valid if it is using HTTPS
+            // to encrypt the authentication credentials. 
+            if (redirectionUri.Scheme == "https")
+            {
+                result = true;
+            }
+            return result;
+        }
+
+
+
         // HELPER FUNCTIONS END ===============================================
+
     }
 }

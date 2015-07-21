@@ -125,7 +125,6 @@
             this.EventLog.Log = "RoswellSignatureSync";
             this.EventLog.Source = "RoswellSignatureSyncManager";
             this.EventLog.SynchronizingObject = this;
-            this.EventLog.EntryWritten += new System.Diagnostics.EntryWrittenEventHandler(this.EventLog_EntryWritten);
             // 
             // SyncManagerForm
             // 
