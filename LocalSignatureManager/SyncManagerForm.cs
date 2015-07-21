@@ -46,9 +46,10 @@ namespace LocalSignatureManager
             
             // TODO: GET USER DETAILS AND PUT IN BOXES TODO TODO TODO TODO TODO
 
+            
 
-
-            // Add the displayname of each user to the list to be displayed. 
+            // Add the displayname of each user to the list to be displayed.
+            RoswellCrypto.PasswordHash = PasswordBox1.Text;
             userDetailsList = RoswellCrypto.getCurrentUserDetails();  //  [[o365 username, o365 pass, displayname]]
             for (int i = 0; i < userDetailsList.Count; i++)
             {
@@ -82,7 +83,7 @@ namespace LocalSignatureManager
                     // Now, we've set up the connection and verified & validated the details.
                     // Save those details for later and exit. 
 
-                    //SAVESAVESAVESAVESAVE
+                    // Save details
                     List<string> details = new List<string>();
                     details.Add(UsernameBox.Text);
                     details.Add(PasswordBox1.Text);
@@ -90,6 +91,8 @@ namespace LocalSignatureManager
                     List<List<string>> toSet = new List<List<string>>();
                     toSet.Add(details);
 
+                    // Exit
+                    RoswellCrypto.PasswordHash = PasswordBox1.Text;
                     RoswellCrypto.setCurrentUserDetails(toSet);
 
                     Close();

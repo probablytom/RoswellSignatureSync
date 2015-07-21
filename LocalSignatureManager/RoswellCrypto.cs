@@ -14,7 +14,7 @@ namespace LocalSignatureManager
     {
 
         // Encryption variables
-        private static readonly string PasswordHash = ""; // TODO: Is this the hashed password, or the plaintext?
+        public static string PasswordHash = ""; // TODO: Is this the hashed password, or the plaintext?
         private static readonly string SaltKey = "RoswellSalt";
         private static readonly string VIKey = "123RoswellKey";
 
@@ -33,6 +33,7 @@ namespace LocalSignatureManager
 
         public static string Encrypt(string plainText)
         {
+
             byte[] plainTextBytes = Encoding.UTF8.GetBytes(plainText);
 
             byte[] keyBytes = new System.Security.Cryptography.Rfc2898DeriveBytes(PasswordHash, Encoding.ASCII.GetBytes(SaltKey)).GetBytes(256 / 8);
@@ -52,6 +53,7 @@ namespace LocalSignatureManager
                 }
                 memoryStream.Close();
             }
+            
             return Convert.ToBase64String(cipherTextBytes);
         }
 
