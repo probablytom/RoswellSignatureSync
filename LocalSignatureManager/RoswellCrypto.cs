@@ -15,73 +15,25 @@ namespace LocalSignatureManager
 
         // Encryption variables
         public static string PasswordHash = "pastsa"; // TODO: Is this the hashed password, or the plaintext?
-        
 
 
-        public string Decrypt(string toDecrypt)
+
+        public static string Decrypt(string toDecrypt)
         {
             return Decrypt(StrToByteArray(toDecrypt));
         }
-        /*
+                
         
-        // Taken from https://social.msdn.microsoft.com/Forums/vstudio/en-US/d6a2836a-d587-4068-8630-94f4fb2a2aeb/encrypt-and-decrypt-a-string-in-c?forum=csharpgeneral
-        // TODO: Comment this!
-        // Encryption & Decryption functions BEGIN ============================
-
-        public static string Encrypt(string plainText)
-        {
-
-            byte[] plainTextBytes = Encoding.UTF8.GetBytes(plainText);
-
-            byte[] keyBytes = new System.Security.Cryptography.Rfc2898DeriveBytes(PasswordHash, Encoding.ASCII.GetBytes(SaltKey)).GetBytes(256 / 8);
-            var symmetricKey = new RijndaelManaged() { Mode = CipherMode.CBC, Padding = PaddingMode.Zeros };
-            MessageBox.Show(symmetricKey.BlockSize.ToString());
-            var encryptor = symmetricKey.CreateEncryptor(keyBytes, Encoding.ASCII.GetBytes(VIKey));
-
-            byte[] cipherTextBytes;
-
-            using (var memoryStream = new System.IO.MemoryStream())
-            {
-                using (var cryptoStream = new CryptoStream(memoryStream, encryptor, CryptoStreamMode.Write))
-                {
-                    cryptoStream.Write(plainTextBytes, 0, plainTextBytes.Length);
-                    cryptoStream.FlushFinalBlock();
-                    cipherTextBytes = memoryStream.ToArray();
-                    cryptoStream.Close();
-                }
-                memoryStream.Close();
-            }
-            
-            return Convert.ToBase64String(cipherTextBytes);
-        }
-
-
-        public static string Decrypt(string encryptedText)
-        {
-            byte[] cipherTextBytes = Convert.FromBase64String(encryptedText);
-            byte[] keyBytes = new Rfc2898DeriveBytes(PasswordHash, Encoding.ASCII.GetBytes(SaltKey)).GetBytes(256 / 8);
-            var symmetricKey = new RijndaelManaged() { Mode = CipherMode.CBC, Padding = PaddingMode.None };
-
-            var decryptor = symmetricKey.CreateDecryptor(keyBytes, Encoding.ASCII.GetBytes(VIKey));
-            var memoryStream = new System.IO.MemoryStream(cipherTextBytes);
-            var cryptoStream = new CryptoStream(memoryStream, decryptor, CryptoStreamMode.Read);
-            byte[] plainTextBytes = new byte[cipherTextBytes.Length];
-
-            int decryptedByteCount = cryptoStream.Read(plainTextBytes, 0, plainTextBytes.Length);
-            memoryStream.Close();
-            cryptoStream.Close();
-            return Encoding.UTF8.GetString(plainTextBytes, 0, decryptedByteCount).TrimEnd("\0".ToCharArray());
-        }
-        */
+         
 
         /*      // From http://stackoverflow.com/questions/165808/simple-two-way-encryption-for-c-sharp */
         // Change these keys
-        private byte[] Key = { 123, 217, 19, 31, 244, 236, 35, 40, 14, 14, 217, 16, 7, 12, 22, 210, 24, 240, 176, 44, 133, 253, 96, 219, 124, 126, 171, 18, 11, 216, 5, 2 };
-        private byte[] Vector = { 19, 168, 194, 172, 213, 43, 213, 119, 23, 11, 252, 142, 79, 22, 164, 153 };
+        private static byte[] Key = { 123, 217, 19, 31, 244, 236, 35, 40, 14, 14, 217, 16, 7, 12, 22, 210, 24, 240, 176, 44, 133, 253, 96, 219, 124, 126, 171, 18, 11, 216, 5, 2 };
+        private static byte[] Vector = { 19, 168, 194, 172, 213, 43, 213, 119, 23, 11, 252, 142, 79, 22, 164, 153 };
 
 
-        private ICryptoTransform EncryptorTransform, DecryptorTransform;
-        private System.Text.UTF8Encoding UTFEncoder;
+        private static ICryptoTransform EncryptorTransform, DecryptorTransform;
+        private static System.Text.UTF8Encoding UTFEncoder;
 
         public RoswellCrypto()
         {
@@ -89,8 +41,8 @@ namespace LocalSignatureManager
             RijndaelManaged rm = new RijndaelManaged();
 
             //Create an encryptor and a decryptor using our encryption method, key, and vector.
-            EncryptorTransform = rm.CreateEncryptor(this.Key, this.Vector);
-            DecryptorTransform = rm.CreateDecryptor(this.Key, this.Vector);
+            EncryptorTransform = rm.CreateEncryptor(Key, Vector);
+            DecryptorTransform = rm.CreateDecryptor(Key, Vector);
 
             //Used to translate bytes to text and vice versa
             UTFEncoder = new System.Text.UTF8Encoding();
@@ -128,13 +80,13 @@ namespace LocalSignatureManager
 
         /// ----------- The commonly used methods ------------------------------    
         /// Encrypt some text and return a string suitable for passing in a URL.
-        public string EncryptToString(string TextValue)
+        public static string EncryptToString(string TextValue)
         {
             return ByteArrToString(Encrypt(TextValue));
         }
 
         /// Encrypt some text and return an encrypted byte array.
-        public byte[] Encrypt(string TextValue)
+        public static byte[] Encrypt(string TextValue)
         {
             //Translates our text value into a byte array.
             Byte[] bytes = UTFEncoder.GetBytes(TextValue);
@@ -166,13 +118,13 @@ namespace LocalSignatureManager
         }
 
         /// The other side: Decryption methods
-        public string DecryptString(string EncryptedString)
+        public static string DecryptString(string EncryptedString)
         {
             return Decrypt(StrToByteArray(EncryptedString));
         }
 
         /// Decryption when working with byte arrays.    
-        public string Decrypt(byte[] EncryptedValue)
+        public static string Decrypt(byte[] EncryptedValue)
         {
             #region Write the encrypted value to the decryption stream
             MemoryStream encryptedStream = new MemoryStream();
@@ -195,7 +147,7 @@ namespace LocalSignatureManager
         //      return encoding.GetBytes(str);
         // However, this results in character values that cannot be passed in a URL.  So, instead, I just
         // lay out all of the byte values in a long string of numbers (three per - must pad numbers less than 100).
-        public byte[] StrToByteArray(string str)
+        public static byte[] StrToByteArray(string str)
         {
             if (str.Length == 0)
                 throw new Exception("Invalid string value in StrToByteArray");
@@ -217,7 +169,7 @@ namespace LocalSignatureManager
         // Same comment as above.  Normally the conversion would use an ASCII encoding in the other direction:
         //      System.Text.ASCIIEncoding enc = new System.Text.ASCIIEncoding();
         //      return enc.GetString(byteArr);    
-        public string ByteArrToString(byte[] byteArr)
+        public static string ByteArrToString(byte[] byteArr)
         {
             byte val;
             string tempStr = "";
@@ -236,7 +188,7 @@ namespace LocalSignatureManager
 
 
         // ToDo: decrypt the line structure for keeping usernames/passwords.
-        private string[] decryptLine(string line)
+        private static string[] decryptLine(string line)
         {
             return Decrypt(line).Split(' ');
         }
@@ -251,7 +203,7 @@ namespace LocalSignatureManager
 
         // Loads a file of encrypted strings and returns a nested list of structure:
         // [ [ o365user, o365pass, displayname ] ]
-        public List<List<string>> loadFile(string filePath)
+        public static List<List<string>> loadFile(string filePath)
         {
             string[] fileContents = { };
             List<List<string>> details = new List<List<string>>();
@@ -293,7 +245,7 @@ namespace LocalSignatureManager
 
         // writes a file of encrypted strings from a nested list of structure:
         // [ [ o365user, o365pass, displayname ] ]
-        public void EncryptAndWriteFile(List<List<string>> detailsList, string filepath)
+        public static void EncryptAndWriteFile(List<List<string>> detailsList, string filepath)
         {
             string toWrite = "";
             string toEncrypt;
@@ -310,82 +262,6 @@ namespace LocalSignatureManager
 
             File.WriteAllText(filepath, toWrite);
 
-        }
-
-
-        public List<string> getCurrentUserDetails()
-        {
-            List<string> currentDetails = new List<string>();
-
-            // Search directory of files for this program for relevant user details
-            string filepath = Environment.SpecialFolder.ApplicationData + "\\Roswell Signature Sync\\";
-            string username = System.Security.Principal.WindowsIdentity.GetCurrent().Name; // Current username
-            filepath += ByteArrToString(Encrypt(username)) + ".dts";
-
-            if (!(File.Exists(filepath)))
-            {
-                return null;
-            }
-
-
-            MessageBox.Show(filepath);
-            foreach (string encryptedDetails in File.ReadAllLines(filepath))
-            {
-
-                MessageBox.Show(encryptedDetails);
-                string[] unSortedDetails = Decrypt(encryptedDetails).Split(' ');
-                currentDetails.Add(unSortedDetails[0]);
-                currentDetails.Add(unSortedDetails[1]);
-
-                // Extract and concatenate the display name
-                string displayname = unSortedDetails[2];
-                for (int i = 3; i < unSortedDetails.Length; i++)
-                {
-                    displayname += ' ' + unSortedDetails[i];
-                }
-                currentDetails.Add(displayname);
-            }
-
-            return currentDetails;
-        
-        }
-
-        public bool setCurrentUserDetails(List<List<string>> userDetailsList)
-        {
-
-            string toWrite = "";
-
-            // Convert the nested list to an encrypted string
-            foreach (List<string> detailSet in userDetailsList)
-            {
-                if (toWrite != "")
-                    toWrite += '\n';
-                toWrite += ByteArrToString(Encrypt(detailSet[0] + ' ' + detailSet[1] + ' ' + detailSet[2])); // Add all of the details to the detail set. 
-            }
-
-
-            // Attempt to write. 
-            try
-            {
-                // Check directory to write to exists (and create it if not)
-                string filepath = Environment.SpecialFolder.ApplicationData + "\\Roswell Signature Sync\\";
-                System.IO.FileInfo file = new System.IO.FileInfo(filepath);
-                file.Directory.Create(); // If the directory already exists, this method does nothing.
-
-               // Write to the encrypted username.
-                string username = System.Security.Principal.WindowsIdentity.GetCurrent().Name; // Current username
-                filepath += ByteArrToString(Encrypt(username)) + ".dts";
-                System.IO.File.WriteAllText(filepath, toWrite);
-                
-                return true;
-            }
-            catch (Exception ex)
-            {
-                // We need error logging here! TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO 
-                Console.WriteLine("Had trouble writing to path; could not save data.\nError reads:\n" + ex.Message); // This should be an error log write. 
-                MessageBox.Show("Had trouble writing to path; could not save data.blarp.\nError reads:\n" + ex.Message); // Message should be changed once error logging is implemented. 
-                return false;
-            }
         }
 
 

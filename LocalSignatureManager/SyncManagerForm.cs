@@ -42,16 +42,10 @@ namespace LocalSignatureManager
         private void SyncManagerForm_Load(object sender, EventArgs e)
         {
             List<string> userDetailsList = new List<string>(); 
-
-            
-            
-            // TODO: GET USER DETAILS AND PUT IN BOXES TODO TODO TODO TODO TODO
-
-            
+                       
 
             // Add the displayname of each user to the list to be displayed.
-            RoswellCrypto.PasswordHash = PasswordBox1.Text;
-            userDetailsList = encoder.getCurrentUserDetails();  //  [[o365 username, o365 pass, displayname]]
+            userDetailsList = UserFunctions.getCurrentUserDetails();  //  [[o365 username, o365 pass, displayname]]
 
             // Are details present?
             if (userDetailsList == null)
@@ -109,7 +103,7 @@ namespace LocalSignatureManager
                     toSet.Add(details);
 
                     // Exit
-                    encoder.setCurrentUserDetails(toSet);
+                    UserFunctions.setCurrentUserDetails(toSet);
 
                     Close();
 
