@@ -66,17 +66,6 @@ namespace LocalSignatureManager
             rm.GenerateIV();
             return rm.IV;
         }
-        /*
-        public string Encrypt(string toEncrypt)
-        {
-            return EncryptToString(toEncrypt);
-        }
-
-        public string Decrypt(string toDecrypt)
-        {
-            return DecryptString(toDecrypt);
-        }*/
-
 
         /// ----------- The commonly used methods ------------------------------    
         /// Encrypt some text and return a string suitable for passing in a URL.
