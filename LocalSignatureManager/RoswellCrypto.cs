@@ -344,8 +344,9 @@ namespace LocalSignatureManager
                     displayname += ' ' + unSortedDetails[i];
                 }
                 currentDetails.Add(displayname);
-                return currentDetails;
             }
+
+            return currentDetails;
         
         }
 
