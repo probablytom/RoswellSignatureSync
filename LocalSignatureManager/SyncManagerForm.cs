@@ -18,7 +18,7 @@ namespace LocalSignatureManager
     {
         
         List<List<string>> userDetailsList;
-        string originalDetails = "";
+        List<string> originalDetails;
         ExchangeService exchangeService;
         UserConfiguration userConfig;
         RoswellCrypto encoder = new RoswellCrypto();
@@ -41,7 +41,7 @@ namespace LocalSignatureManager
 
         private void SyncManagerForm_Load(object sender, EventArgs e)
         {
-            List<string> UserListContents = new List<string>(); 
+            List<string> userDetailsList = new List<string>(); 
 
             
             
@@ -61,23 +61,28 @@ namespace LocalSignatureManager
             else
             {
 
-                for (int i = 0; i < userDetailsList.Count; i++)
+                /*for (int i = 0; i < userDetailsList.Count; i++)
                 {
                     UserListContents.Add(userDetailsList[i][2]);
-                }
+                }*/
 
-                // Add the displayname of each user found to the list displayed. 
-                UsernameBox.Text = UserListContents[0];
+                // Add the details of the user to the password box.
+                UsernameBox.Text = userDetailsList[0];
+                PasswordBox1.Text = userDetailsList[1];
+                PasswordBox2.Text = userDetailsList[1];
+                
 
                 // Remember this detail in case we need to revert!
-                originalDetails = UserListContents[0];
+                originalDetails = userDetailsList;
 
             }
         }
 
         private void RevertButton_Click(object sender, EventArgs e)
         {
-            UsernameBox.Text = originalDetails;
+            UsernameBox.Text = originalDetails[0];
+            PasswordBox1.Text = originalDetails[1];
+            PasswordBox2.Text = originalDetails[1];
         }
 
         private void SaveAndCloseButton_Click(object sender, EventArgs e)
@@ -115,7 +120,7 @@ namespace LocalSignatureManager
             {
                 // Passwords didn't match!
                 MessageBox.Show("ERROR. Passwords don't match.");
-                EventLog.WriteEntry("Couldn't save and exit: Passwords did not match.");
+                LocalSigEventLog.WriteEntry("Couldn't save and exit: Passwords did not match.");
             }
 
         }
@@ -181,7 +186,7 @@ namespace LocalSignatureManager
             catch (Exception ex)
             {
                 MessageBox.Show("Couldn't make a connection to office365.\n\nAre you connected to the internet?\nIf so, the details entered may be incorrect.");
-                EventLog.WriteEntry("Couldn't make a connection to office365.\nEither the internet connection is down, or the password entered for user " + username + "is incorrect.\n\nException raised reads:" + ex.Message);
+                LocalSigEventLog.WriteEntry("Couldn't make a connection to office365.\nEither the internet connection is down, or the password entered for user " + username + "is incorrect.\n\nException raised reads:" + ex.Message);
                 return false;
             }
         }

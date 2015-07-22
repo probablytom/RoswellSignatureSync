@@ -37,8 +37,8 @@
             this.PasswordBox2 = new System.Windows.Forms.TextBox();
             this.PasswordBox1 = new System.Windows.Forms.TextBox();
             this.VerifyButton = new System.Windows.Forms.Button();
-            this.EventLog = new System.Diagnostics.EventLog();
-            ((System.ComponentModel.ISupportInitialize)(this.EventLog)).BeginInit();
+            this.LocalSigEventLog = new System.Diagnostics.EventLog();
+            ((System.ComponentModel.ISupportInitialize)(this.LocalSigEventLog)).BeginInit();
             this.SuspendLayout();
             // 
             // SaveAndCloseButton
@@ -120,11 +120,11 @@
             this.VerifyButton.Text = "Verify connection";
             this.VerifyButton.UseVisualStyleBackColor = true;
             // 
-            // EventLog
+            // LocalSigEventLog
             // 
-            this.EventLog.Log = "RoswellSignatureSync";
-            this.EventLog.Source = "RoswellSignatureSyncManager";
-            this.EventLog.SynchronizingObject = this;
+            this.LocalSigEventLog.Log = "RoswellSignatureSync";
+            this.LocalSigEventLog.Source = "RoswellSignatureSyncManager";
+            this.LocalSigEventLog.SynchronizingObject = this;
             // 
             // SyncManagerForm
             // 
@@ -143,7 +143,7 @@
             this.Name = "SyncManagerForm";
             this.Text = "Signature Sync Manager Local Edition";
             this.Load += new System.EventHandler(this.SyncManagerForm_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.EventLog)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.LocalSigEventLog)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -160,7 +160,7 @@
         private System.Windows.Forms.TextBox PasswordBox2;
         private System.Windows.Forms.TextBox PasswordBox1;
         private System.Windows.Forms.Button VerifyButton;
-        private System.Diagnostics.EventLog EventLog;
+        private System.Diagnostics.EventLog LocalSigEventLog;
     }
 }
 

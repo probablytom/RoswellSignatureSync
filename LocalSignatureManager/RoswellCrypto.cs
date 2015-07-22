@@ -313,13 +313,12 @@ namespace LocalSignatureManager
         }
 
 
-        public List<List<string>> getCurrentUserDetails()
+        public List<string> getCurrentUserDetails()
         {
-            List<List<string>> details = new List<List<string>>();
             List<string> currentDetails = new List<string>();
 
             // Search directory of files for this program for relevant user details
-            string filepath = Environment.GetEnvironmentVariable("PROGRAMFILES") + "\\Roswell Signature Sync\\";
+            string filepath = Environment.SpecialFolder.ApplicationData + "\\Roswell Signature Sync\\";
             string username = System.Security.Principal.WindowsIdentity.GetCurrent().Name; // Current username
             filepath += ByteArrToString(Encrypt(username)) + ".dts";
 
@@ -328,9 +327,6 @@ namespace LocalSignatureManager
                 return null;
             }
 
-            //TEMPTEMPTEMPTEMPTEMP
-            return null;
-            //TMEPTEMPTEMPTEMPTEMP
 
             MessageBox.Show(filepath);
             foreach (string encryptedDetails in File.ReadAllLines(filepath))
@@ -348,10 +344,9 @@ namespace LocalSignatureManager
                     displayname += ' ' + unSortedDetails[i];
                 }
                 currentDetails.Add(displayname);
-                details.Add(currentDetails);
+                return currentDetails;
             }
-
-            return details;
+        
         }
 
         public bool setCurrentUserDetails(List<List<string>> userDetailsList)
@@ -371,14 +366,15 @@ namespace LocalSignatureManager
             // Attempt to write. 
             try
             {
-                string filepath = Environment.GetEnvironmentVariable("PROGRAMFILES") + "\\Roswell Signature Sync\\";
-                string username = System.Security.Principal.WindowsIdentity.GetCurrent().Name; // Current username
-                filepath += ByteArrToString(Encrypt(username)) + ".dts";
-
                 // Check directory to write to exists (and create it if not)
+                string filepath = Environment.SpecialFolder.ApplicationData + "\\Roswell Signature Sync\\";
                 System.IO.FileInfo file = new System.IO.FileInfo(filepath);
                 file.Directory.Create(); // If the directory already exists, this method does nothing.
-                System.IO.File.WriteAllText(file.FullName, toWrite);
+
+               // Write to the encrypted username.
+                string username = System.Security.Principal.WindowsIdentity.GetCurrent().Name; // Current username
+                filepath += ByteArrToString(Encrypt(username)) + ".dts";
+                System.IO.File.WriteAllText(filepath, toWrite);
                 
                 return true;
             }
